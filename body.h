@@ -1,15 +1,19 @@
 #ifndef BODY_H
 #define BODY_H
 
+#include <memory>
 #include "vec2.h"
+#include "shape.h"
 
 class Body{
 public:
-    Vec2 position, velocity, force;
+    Vec2 position, prevPosition, velocity, force;
+
     float mass, inverseMass; 
+    std::unique_ptr<Shape> shape;
 
     Body(Vec2 position, float mass)
-        :position(position), velocity(0, 0), force(0, 0), mass(mass){
+        :position(position),prevPosition(position), velocity(0, 0), force(0, 0), mass(mass), shape(std::move(shape)){
         if(mass<=0){
             inverseMass=0;
         }
@@ -30,19 +34,25 @@ public:
         return Vec2(force.x*inverseMass, force.y*inverseMass);
     }
 
-    void updateVelocity(float t){
+    void updateVelocity(float dt){
         Vec2 acc = calAccel();
-        this->velocity+=t*acc;
+        this->velocity+=dt*acc;
     }
 
-    void updatePosition(float t){
-        this->position+=velocity*t;
+    void updatePosition(float dt){
+        this->prevPosition = position;
+        this->position+=velocity*dt;
     }
 
-    void update(float t){
-        updateVelocity(t);
-        updatePosition(t);
+    void update(float dt){
+        updateVelocity(dt);
+        updatePosition(dt);
         clearForces();
+    }
+
+    Vec2 getInterpolatedPosition(float alpha) const{
+        Vec2 renderPosition = prevPosition+(position - prevPosition)*alpha;
+        return renderPosition;
     }
 
 };

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include<vector>
+#include<stdexcept>
 #include "body.h"
 
 
@@ -11,7 +12,11 @@ class World{
 private:
     Vec2 gravity = Vec2(0, -9.8);
     std::vector<Body> bodies{};
+    float fixedDt = 1.0f / 60.0f;
+    float accumulator = 0.0f;
 public:
+
+    friend Vec2 interpolation(Vec2& prevPosition, Vec2& position);
     
     World(Vec2 gravity) :gravity(gravity){};
 
@@ -26,12 +31,24 @@ public:
         }
     }
 
-    void update(float t){
+    void physicsStep(float dt){
         applyGravity();
         for(Body& b : bodies){
-            b.update(t);
+            b.update(dt);
         }
     }
+
+    void advance(float realElapsedTime){
+        accumulator+=realElapsedTime;
+        while(accumulator>=fixedDt){
+            physicsStep(fixedDt);
+            accumulator-=fixedDt;
+        }
+    }
+
+    float getInterpolationAlpha() const{
+        return (accumulator/fixedDt);
+    };
 
     Body& getBody(int index) {
         if(index<0 || index>=bodies.size()){
