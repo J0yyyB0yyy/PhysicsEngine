@@ -20,8 +20,8 @@ public:
     
     World(Vec2 gravity) :gravity(gravity){};
 
-    void addBody(Vec2 position, float mass){
-        bodies.push_back(Body(position, mass));
+    void addBody(Vec2 position, float mass, std::unique_ptr<Shape> shape){
+        bodies.emplace_back(position, mass, std::move(shape));
     }
 
     void applyGravity(){

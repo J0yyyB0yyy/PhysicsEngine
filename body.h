@@ -4,7 +4,6 @@
 #include <memory>
 #include "vec2.h"
 #include "shape.h"
-
 class Body{
 public:
     Vec2 position, prevPosition, velocity, force;
@@ -12,14 +11,20 @@ public:
     float mass, inverseMass; 
     std::unique_ptr<Shape> shape;
 
-    Body(Vec2 position, float mass)
-        :position(position),prevPosition(position), velocity(0, 0), force(0, 0), mass(mass), shape(std::move(shape)){
+    Body(Vec2 position, float mass, std::unique_ptr<Shape> shape)
+        :position(position),
+        prevPosition(position), 
+        velocity(0, 0), force(0, 0), 
+        mass(mass), 
+        shape(std::move(shape)){
+
         if(mass<=0){
             inverseMass=0;
         }
         else{
             inverseMass=1/mass;
         }
+
     }
 
     void applyForce(const Vec2& f){
@@ -30,7 +35,7 @@ public:
         force = Vec2(0, 0);
     }
 
-    Vec2 calAccel(){
+    Vec2 calAccel()const{
         return Vec2(force.x*inverseMass, force.y*inverseMass);
     }
 

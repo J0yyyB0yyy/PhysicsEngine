@@ -11,6 +11,9 @@ public:
     Rectangle(float width, float height)
         : width(width), height(height) {
     }
+    ShapeType getType() const override{
+        return ShapeType::Rectangle;
+    }
 };
 
 #endif

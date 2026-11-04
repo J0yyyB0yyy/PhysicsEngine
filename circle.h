@@ -10,6 +10,9 @@ public:
     Circle(float radius)
         : radius(radius) {
     }
+    ShapeType getType() const override{
+        return ShapeType::Circle;
+    }
 };
 
 
