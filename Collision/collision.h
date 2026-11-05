@@ -6,12 +6,19 @@
 #include"rectangleVsRectangle.h"
 
 bool checkCollision(const Body& a, const Body& b){
-    ShapeType typeA = a.shape->getType();
-    ShapeType typeB = a.shape->getType();
+	ShapeType typeA = a.shape->getType();
+    	ShapeType typeB = a.shape->getType();
 
-    if(typeA == ShapeType::Circle && typeB == ShapeType::Circle){
-        return circleVsCircle(a, b);
-    }
+    	if(typeA == ShapeType::Circle && typeB == ShapeType::Circle){
+        	return circleVsCircle(a, b);
+    	}
+	if(typeA == ShapeType::Circle && typeB == ShapeType::Rectangle){
+	   return circleVsRectangle(a, b);
+    	}
+
+	if(typeA == ShapeType::Rectangle && typeB == ShapeType::Rectangle){
+        	return rectangleVsRectangle(a, b);
+	}
 }
 
 #endif
