@@ -1,21 +1,49 @@
+#ifndef CIRCLE_VS_CIRCLE_H
+#define CIRCLE_VS_CIRCLE_H
 
-#include "body.h"
-#include "circle.h"
+
+#include "../body.h"
+#include "../circle.h"
+#include "collisionManifold.h"
 
 
-bool circleVsCircle(const Body& a, const Body& b){
 
-    Circle* circleA = dynamic_cast<Circle*>(a.shape.get());
-    Circle* circleB = dynamic_cast<Circle*>(b.shape.get());
+collisionManifold circleVsCircle(const Body& a, const Body& b){
+
+    collisionManifold manifold{};
+    manifold.colliding = false;
+
+    const Circle* circleA = dynamic_cast<Circle*>(a.shape.get());
+    const Circle* circleB = dynamic_cast<Circle*>(b.shape.get());
 
     if(circleA == nullptr || circleB == nullptr){
-        return false;
+        return manifold;
     }
 
-    Vec2 dist = (a.position - b.position);
-    float radiSum = circleA->radius = circleB->radius;
-    float radiSumSquared = radiSum*radiSum;
+    Vec2 dist = (b.position - a.position);
+    float radiusSum = circleA->radius + circleB->radius;
+    float radiusSumSquared = radiusSum*radiusSum;
 
-    return dist.magSquared() <= radiSumSquared;
+    if (dist.magSquared() > radiusSum * radiusSum) {
+        return manifold;
+    }
+
+    float distance = dist.mag();
+
+    if (distance > 0.0f) {
+        manifold.normal = dist / distance;
+    } else {
+        manifold.normal = Vec2(1, 0);
+    }
+
+    manifold.penetration = radiusSum - distance;
+
+    manifold.contactPoint = a.position + manifold.normal * circleA->radius;
+
+    manifold.colliding = true;
+
+    return manifold;
    
 }
+
+#endif

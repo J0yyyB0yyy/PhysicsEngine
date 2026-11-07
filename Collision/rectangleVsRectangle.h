@@ -2,18 +2,21 @@
 #ifndef RECTANGLE_VS_RECTANGLE_H
 #define RECTANGLE_VS_RECTANGLE_H
 
-#include "rectangle.h"
-#include "body.h"
+#include <algorithm>
+#include "../body.h"
+#include "../rectangle.h"
+#include "collisionManifold.h"
 
-bool rectangleVsRectangle(
-    const Body& a,
-    const Body& b
-) {
-    const Rectangle* rectA =
-        static_cast<const Rectangle*>(a.shape.get());
+collisionManifold rectangleVsRectangle(const Body& a, const Body& b) {
+    collisionManifold manifold{};
 
-    const Rectangle* rectB =
-        static_cast<const Rectangle*>(b.shape.get());
+    const Rectangle* rectA = dynamic_cast<const Rectangle*>(a.shape.get());
+
+    const Rectangle* rectB = dynamic_cast<const Rectangle*>(b.shape.get());
+
+    if (!rectA || !rectB) {
+        return manifold;
+    }
 
     float aMinX = a.position.x - rectA->width / 2.0f;
     float aMaxX = a.position.x + rectA->width / 2.0f;
@@ -27,15 +30,28 @@ bool rectangleVsRectangle(
     float bMinY = b.position.y - rectB->height / 2.0f;
     float bMaxY = b.position.y + rectB->height / 2.0f;
 
-    if (aMaxX < bMinX ||
-        aMinX > bMaxX ||
-        aMaxY < bMinY ||
-        aMinY > bMaxY) {
+    float overlapX = std::min(aMaxX, bMaxX) - std::max(aMinX, bMinX);
+    float overlapY = std::min(aMaxY, bMaxY) - std::max(aMinY, bMinY);
 
-        return false;
+    if (overlapX <= 0 || overlapY <= 0) {
+        return manifold;
     }
 
-    return true;
+    if (overlapX < overlapY) {
+        manifold.normal = Vec2(b.position.x >= a.position.x ? 1.0f : -1.0f, 0.0f);
+        manifold.penetration = overlapX;
+    } else {
+        manifold.normal = Vec2(0.0f, b.position.y >= a.position.y ? 1.0f : -1.0f);
+        manifold.penetration = overlapY;
+    }
+
+    float contactX = (std::max(aMinX, bMinX) +std::min(aMaxX, bMaxX)) / 2.0f;
+    float contactY = (std::max(aMinY, bMinY) + std::min(aMaxY, bMaxY)) / 2.0f;
+
+    manifold.contactPoint = Vec2(contactX, contactY);
+    manifold.colliding = true;
+
+    return manifold;
 }
 
 #endif
