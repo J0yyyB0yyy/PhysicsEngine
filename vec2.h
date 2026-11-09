@@ -4,7 +4,6 @@
 #include<cmath>
 #include <stdexcept>
 
-using namespace std;
 
 class Vec2{
 public:
