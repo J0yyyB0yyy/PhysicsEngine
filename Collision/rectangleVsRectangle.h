@@ -7,12 +7,17 @@
 #include "../rectangle.h"
 #include "collisionManifold.h"
 
-collisionManifold rectangleVsRectangle(const Body& a, const Body& b) {
+collisionManifold rectangleVsRectangle(
+    const Body& a,
+    const Body& b
+) {
     collisionManifold manifold{};
 
-    const Rectangle* rectA = dynamic_cast<const Rectangle*>(a.shape.get());
+    const Rectangle* rectA =
+        dynamic_cast<const Rectangle*>(a.shape.get());
 
-    const Rectangle* rectB = dynamic_cast<const Rectangle*>(b.shape.get());
+    const Rectangle* rectB =
+        dynamic_cast<const Rectangle*>(b.shape.get());
 
     if (!rectA || !rectB) {
         return manifold;
@@ -30,25 +35,50 @@ collisionManifold rectangleVsRectangle(const Body& a, const Body& b) {
     float bMinY = b.position.y - rectB->height / 2.0f;
     float bMaxY = b.position.y + rectB->height / 2.0f;
 
-    float overlapX = std::min(aMaxX, bMaxX) - std::max(aMinX, bMinX);
-    float overlapY = std::min(aMaxY, bMaxY) - std::max(aMinY, bMinY);
+    float overlapX =
+        std::min(aMaxX, bMaxX) - std::max(aMinX, bMinX);
 
-    if (overlapX <= 0 || overlapY <= 0) {
+    float overlapY =
+        std::min(aMaxY, bMaxY) - std::max(aMinY, bMinY);
+
+    // No collision or merely touching.
+    if (overlapX <= 0.0f || overlapY <= 0.0f) {
         return manifold;
     }
 
+    // Select the axis with minimum penetration.
     if (overlapX < overlapY) {
-        manifold.normal = Vec2(b.position.x >= a.position.x ? 1.0f : -1.0f, 0.0f);
+
+        manifold.normal = Vec2(
+            b.position.x >= a.position.x ? 1.0f : -1.0f,
+            0.0f
+        );
+
         manifold.penetration = overlapX;
+
     } else {
-        manifold.normal = Vec2(0.0f, b.position.y >= a.position.y ? 1.0f : -1.0f);
+
+        manifold.normal = Vec2(
+            0.0f,
+            b.position.y >= a.position.y ? 1.0f : -1.0f
+        );
+
         manifold.penetration = overlapY;
     }
 
-    float contactX = (std::max(aMinX, bMinX) +std::min(aMaxX, bMaxX)) / 2.0f;
-    float contactY = (std::max(aMinY, bMinY) + std::min(aMaxY, bMaxY)) / 2.0f;
+    // Approximate contact point.
+    float contactX = (
+        std::max(aMinX, bMinX) +
+        std::min(aMaxX, bMaxX)
+    ) / 2.0f;
+
+    float contactY = (
+        std::max(aMinY, bMinY) +
+        std::min(aMaxY, bMaxY)
+    ) / 2.0f;
 
     manifold.contactPoint = Vec2(contactX, contactY);
+
     manifold.colliding = true;
 
     return manifold;
