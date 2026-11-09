@@ -8,13 +8,13 @@
 
 
 
-collisionManifold circleVsCircle(const Body& a, const Body& b){
+inline collisionManifold circleVsCircle(const Body& a, const Body& b){
 
     collisionManifold manifold{};
     manifold.colliding = false;
 
-    const Circle* circleA = dynamic_cast<Circle*>(a.shape.get());
-    const Circle* circleB = dynamic_cast<Circle*>(b.shape.get());
+    const Circle* circleA = dynamic_cast<const Circle*>(a.shape.get());
+    const Circle* circleB = dynamic_cast<const Circle*>(b.shape.get());
 
     if(circleA == nullptr || circleB == nullptr){
         return manifold;
@@ -22,8 +22,6 @@ collisionManifold circleVsCircle(const Body& a, const Body& b){
 
     Vec2 dist = (b.position - a.position);
     float radiusSum = circleA->radius + circleB->radius;
-    float radiusSumSquared = radiusSum*radiusSum;
-
     if (dist.magSquared() > radiusSum * radiusSum) {
         return manifold;
     }

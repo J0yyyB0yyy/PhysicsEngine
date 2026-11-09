@@ -10,7 +10,7 @@
 #include "../rectangle.h"
 #include "collisionManifold.h"
 
-collisionManifold circleVsRectangle(
+inline collisionManifold circleVsRectangle(
     const Body& circleBody,
     const Body& rectBody
 ) {
@@ -32,7 +32,6 @@ collisionManifold circleVsRectangle(
     float minY = rectBody.position.y - rectangle->height / 2.0f;
     float maxY = rectBody.position.y + rectangle->height / 2.0f;
 
-    // Find closest point on rectangle.
     float closestX = std::clamp(
         circleBody.position.x, minX, maxX
     );
@@ -43,7 +42,6 @@ collisionManifold circleVsRectangle(
 
     Vec2 closestPoint(closestX, closestY);
 
-    // Direction from circle center to closest point.
     Vec2 difference = closestPoint - circleBody.position;
 
     float distanceSquared = difference.magSquared();
@@ -53,8 +51,6 @@ collisionManifold circleVsRectangle(
         return manifold;
     }
 
-    // Circle center is inside the rectangle
-    // or exactly on its boundary.
     if (distanceSquared < 1e-12f) {
 
         float leftDistance = circleBody.position.x - minX;

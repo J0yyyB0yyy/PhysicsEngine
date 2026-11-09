@@ -8,7 +8,7 @@
 #include "rectangleVsRectangle.h"
 #include "circleVsRectangle.h"
 
-collisionManifold checkCollision(
+inline collisionManifold checkCollision(
     const Body& a,
     const Body& b
 ) {

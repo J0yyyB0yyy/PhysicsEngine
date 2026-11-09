@@ -2,6 +2,7 @@
 #define CIRCLE_H
 
 #include "shape.h"
+#include <stdexcept>
 
 class Circle : public Shape {
 public:
@@ -9,6 +10,9 @@ public:
 
     Circle(float radius)
         : radius(radius) {
+        if (!(radius > 0.0f)) {
+            throw std::invalid_argument("Circle radius must be positive");
+        }
     }
     ShapeType getType() const override{
         return ShapeType::Circle;

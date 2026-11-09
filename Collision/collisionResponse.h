@@ -4,63 +4,55 @@
 #include "collisionManifold.h"
 #include "../body.h"
 #include <algorithm>
+#include <cmath>
 
-void positionalCorrection(Body& a, Body& b, const collisionManifold& manifold){
-
-    if(!manifold.colliding){
-        return;
-    }
-
-    float invMassSum = a.inverseMass + b.inverseMass;
-    if (invMassSum == 0.0f) return;
-
-    const float slop = 0.01f;
-    const float percent = 0.8f;
-
-    float correctionMagnitude = std::max(manifold.penetration - slop, 0.0f)*percent / invMassSum;
-    Vec2 correction = manifold.normal * correctionMagnitude;
-
-    a.position -= a.inverseMass*correction;
-    b.position += b.inverseMass*correction;
-}
-
-void resolveCollision(Body& a, Body& b, const collisionManifold& manifold){
+inline void positionalCorrection(Body& a, Body& b, const collisionManifold& manifold) {
     if (!manifold.colliding) return;
 
-    Vec2 relativeVelocity = b.velocity - a.velocity;
-    float velocityAlongNormal = relativeVelocity.dot(manifold.normal);
-    if (velocityAlongNormal > 0) {
-        return;
-    }
+    const float invMassSum = a.inverseMass + b.inverseMass;
+    if (invMassSum <= 0.0f) return;
 
-    float e = std::min(a.restitution, b.restitution);
-
-    float invMassSum = a.inverseMass + b.inverseMass;
-    if (invMassSum == 0.0f) {
-        return;
-    }
-
-    float impulse = -(1.0f+e)*(velocityAlongNormal)/(invMassSum);
-    Vec2 impulseVector = impulse*manifold.normal;
-
-    a.velocity -= a.inverseMass*impulseVector;
-    b.velocity += b.inverseMass*impulseVector;
+    constexpr float slop = 0.01f;
+    constexpr float percent = 0.8f;
+    const float magnitude = std::max(manifold.penetration - slop, 0.0f) * percent / invMassSum;
+    const Vec2 correction = manifold.normal * magnitude;
+    a.position -= a.inverseMass * correction;
+    b.position += b.inverseMass * correction;
 }
 
-void friction(Body& a, Body& b, const collisionManifold& manifold){
-    if(!manifold.colliding) return;
+inline void friction(Body& a, Body& b, const collisionManifold& manifold, float normalImpulse) {
+    const float invMassSum = a.inverseMass + b.inverseMass;
+    if (!manifold.colliding || invMassSum <= 0.0f || normalImpulse <= 0.0f) return;
 
-    float invMassSum = a.inverseMass + b.inverseMass;
-    if(invMassSum == 0.0f) return ;
-    float e = std::min(a.restitution, b.restitution);
-    Vec2 relativeVelocity = b.velocity - a.velocity;
+    const Vec2 relativeVelocity = b.velocity - a.velocity;
+    const Vec2 tangent(-manifold.normal.y, manifold.normal.x);
+    const float tangentSpeed = relativeVelocity.dot(tangent);
+    float tangentImpulse = -tangentSpeed / invMassSum;
+    const float coefficient = std::sqrt(std::max(0.0f, a.friction * b.friction));
+    const float limit = coefficient * normalImpulse;
+    tangentImpulse = std::clamp(tangentImpulse, -limit, limit);
 
-    Vec2 tangent = Vec2(-manifold.normal.y, manifold.normal.x);
-    float velocityAlongTangent = relativeVelocity.dot(tangent);
-
-    float impulse = -(1.0f)*velocityAlongTangent/(invMassSum);
-    Vec2 impulseVector = impulse*tangent;
-    
-
+    const Vec2 impulse = tangentImpulse * tangent;
+    a.velocity -= a.inverseMass * impulse;
+    b.velocity += b.inverseMass * impulse;
 }
+
+inline void resolveCollision(Body& a, Body& b, const collisionManifold& manifold) {
+    if (!manifold.colliding) return;
+
+    const float invMassSum = a.inverseMass + b.inverseMass;
+    if (invMassSum <= 0.0f) return;
+
+    const Vec2 relativeVelocity = b.velocity - a.velocity;
+    const float velocityAlongNormal = relativeVelocity.dot(manifold.normal);
+    if (velocityAlongNormal >= 0.0f) return;
+
+    const float restitution = std::clamp(std::min(a.restitution, b.restitution), 0.0f, 1.0f);
+    const float impulseMagnitude = -(1.0f + restitution) * velocityAlongNormal / invMassSum;
+    const Vec2 impulse = impulseMagnitude * manifold.normal;
+    a.velocity -= a.inverseMass * impulse;
+    b.velocity += b.inverseMass * impulse;
+    friction(a, b, manifold, impulseMagnitude);
+}
+
 #endif

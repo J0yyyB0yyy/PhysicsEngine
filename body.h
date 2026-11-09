@@ -2,13 +2,16 @@
 #define BODY_H
 
 #include <memory>
+#include <utility>
 #include "vec2.h"
 #include "shape.h"
 class Body{
 public:
     Vec2 position, prevPosition, velocity, force;
 
-    float mass, inverseMass; 
+    float mass, inverseMass;
+    float restitution = 0.0f;
+    float friction = 0.5f;
     std::unique_ptr<Shape> shape;
 
     Body(Vec2 position, float mass, std::unique_ptr<Shape> shape)

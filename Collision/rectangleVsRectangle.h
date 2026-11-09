@@ -7,7 +7,7 @@
 #include "../rectangle.h"
 #include "collisionManifold.h"
 
-collisionManifold rectangleVsRectangle(
+inline collisionManifold rectangleVsRectangle(
     const Body& a,
     const Body& b
 ) {
@@ -41,8 +41,8 @@ collisionManifold rectangleVsRectangle(
     float overlapY =
         std::min(aMaxY, bMaxY) - std::max(aMinY, bMinY);
 
-    // No collision or merely touching.
-    if (overlapX <= 0.0f || overlapY <= 0.0f) {
+    // Exact contact is a collision, matching the other shape pairs.
+    if (overlapX < 0.0f || overlapY < 0.0f) {
         return manifold;
     }
 

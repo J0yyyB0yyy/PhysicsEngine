@@ -2,9 +2,12 @@
 #define WORLD_H
 
 #include <iostream>
+#include <cstddef>
 #include<vector>
 #include<stdexcept>
 #include "body.h"
+#include "Collision/collision.h"
+#include "Collision/collisionResponse.h"
 
 
 
@@ -36,6 +39,16 @@ public:
         for(Body& b : bodies){
             b.update(dt);
         }
+        for (std::size_t i = 0; i < bodies.size(); ++i) {
+            for (std::size_t j = i + 1; j < bodies.size(); ++j) {
+                Body& a = bodies[i];
+                Body& b = bodies[j];
+                const collisionManifold manifold = checkCollision(a, b);
+                if (!manifold.colliding) continue;
+                resolveCollision(a, b, manifold);
+                positionalCorrection(a, b, manifold);
+            }
+        }
     }
 
     void advance(float realElapsedTime){
@@ -51,7 +64,7 @@ public:
     };
 
     Body& getBody(int index) {
-        if(index<0 || index>=bodies.size()){
+        if(index < 0 || static_cast<std::size_t>(index) >= bodies.size()){
             throw std::domain_error("Can't get body");
         }
         return bodies[index];
