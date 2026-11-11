@@ -1,6 +1,30 @@
 #include"../../include/Graphics/Renderer.h"
+#include"../../include/Graphics/Renderer.h"
+#include"../../include/Physics/circle.h"
+#include"../../include/Physics/rectangle.h"
+#include"../../include/Physics/shape.h"
+
 #include <iostream>
 #include <stdexcept>
+
+struct CircleData{
+    int x;
+    int y;
+    int radius;
+};
+struct RectangleData{
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
+void drawFilledCircle( SDL_Renderer* renderer, int centerX, int centerY, int radius){
+    for(int y =-radius;y<=radius;y++){
+        int x = static_cast<int>(std::sqrt(radius*radius-y*y));
+        SDL_RenderDrawLine(renderer, centerX-x, centerY+y, centerX+x, centerY+y);
+    };
+}
 
 Renderer::Renderer(int width, int height) :window(nullptr), renderer(nullptr){
     if(SDL_Init(SDL_INIT_VIDEO)<0){
@@ -52,6 +76,13 @@ void Renderer:: present(){
 }
 
 void Renderer::drawBody(const Body& b){
-    
-
+    ShapeType s = b.shape->getType();
+    if(s == ShapeType::Circle){
+        const Circle* circle = dynamic_cast<const Circle*>(b.shape.get());
+        if(circle == nullptr) return;
+    }
+    if(s ==ShapeType::Rectangle){
+        const Rectangle* rectangle = dynamic_cast<const Rectangle*>(b.shape.get());
+        if(rectangle == nullptr) return;
+    }
 }
