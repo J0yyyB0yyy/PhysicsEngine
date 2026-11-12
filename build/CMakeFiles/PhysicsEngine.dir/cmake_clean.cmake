@@ -1,5 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/PhysicsEngine.dir/link.d"
+  "CMakeFiles/PhysicsEngine.dir/src/Graphics/Renderer.cpp.o"
+  "CMakeFiles/PhysicsEngine.dir/src/Graphics/Renderer.cpp.o.d"
   "CMakeFiles/PhysicsEngine.dir/src/main.cpp.o"
   "CMakeFiles/PhysicsEngine.dir/src/main.cpp.o.d"
   "PhysicsEngine"

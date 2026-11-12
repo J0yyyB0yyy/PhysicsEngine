@@ -2,8 +2,8 @@
 #define CIRCLE_VS_CIRCLE_H
 
 
-#include "../body.h"
-#include "../circle.h"
+#include "../Physics/body.h"
+#include "../Physics/circle.h"
 #include "collisionManifold.h"
 
 

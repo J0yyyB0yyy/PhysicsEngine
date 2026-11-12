@@ -3,6 +3,7 @@ PhysicsEngine: \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/crti.o \
   /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o \
   CMakeFiles/PhysicsEngine.dir/src/main.cpp.o \
+  CMakeFiles/PhysicsEngine.dir/src/Graphics/Renderer.cpp.o \
   /usr/lib/x86_64-linux-gnu/libSDL2.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
@@ -48,7 +49,6 @@ PhysicsEngine: \
   /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 \
   /usr/lib/x86_64-linux-gnu/libdecor-0.so.0 \
   /lib64/ld-linux-x86-64.so.2 \
-  /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libgcc_s.so.1 \
   /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-17.0.so \
   /usr/lib/x86_64-linux-gnu/libdbus-1.so.3 \
   /usr/lib/x86_64-linux-gnu/libxcb.so.1 \
@@ -78,6 +78,8 @@ PhysicsEngine: \
 /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o:
 
 CMakeFiles/PhysicsEngine.dir/src/main.cpp.o:
+
+CMakeFiles/PhysicsEngine.dir/src/Graphics/Renderer.cpp.o:
 
 /usr/lib/x86_64-linux-gnu/libSDL2.so:
 
@@ -168,8 +170,6 @@ CMakeFiles/PhysicsEngine.dir/src/main.cpp.o:
 /usr/lib/x86_64-linux-gnu/libdecor-0.so.0:
 
 /lib64/ld-linux-x86-64.so.2:
-
-/usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libgcc_s.so.1:
 
 /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-17.0.so:
 

@@ -1,101 +1,79 @@
-#include<iostream>
-#include <cmath>
-#include<vector>
-#include<SDL2/SDL.h>
+#include <iostream>
+#include <memory>
+#include <algorithm>
 
-struct CircleData{
-    int x;
-    int y;
-    int radius;
-};
-struct RectangleData{
-    int x;
-    int y;
-    int width;
-    int height;
-};
+#include "../include/Physics/world.h"
+#include "../include/Physics/circle.h"
+#include "../include/Physics/rectangle.h"
+#include "../include/Graphics/Renderer.h"
 
-std::vector<CircleData> circles;
-std::vector<RectangleData> rectangles;
+int main() {
 
-void drawFilledCircle( SDL_Renderer* renderer, int centerX, int centerY, int radius){
-    for(int y =-radius;y<=radius;y++){
-        int x = static_cast<int>(std::sqrt(radius*radius-y*y));
-        SDL_RenderDrawLine(renderer, centerX-x, centerY+y, centerX+x, centerY+y);
-    };
-}
+    World world(Vec2(0.0f, -9.8f));
 
-int main(){
+    Renderer renderer(1280, 720);
 
-    if(SDL_Init(SDL_INIT_VIDEO)<0){
-        std::cerr << "SDL initalization failed: "<<SDL_GetError()<<'\n';
-        return 1;
-    }
+    renderer.setScale(50.0f);
 
-    SDL_Window* window = SDL_CreateWindow("Physics Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
-    if(window==nullptr){
-        std::cerr << "Window creation failed: "<<SDL_GetError()<<"\n";
-        SDL_Quit();
-        return 1;
-    }
+    world.addBody(
+        Vec2(0.0f, 5.0f),
+        1.0f,
+        std::make_unique<Circle>(1.0f)
+    );
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if(renderer == nullptr){
-        std::cerr << "renderer createion failed: "<<SDL_GetError()<<'\n';
+    world.addBody(
+        Vec2(3.0f, 5.0f),
+        1.0f,
+        std::make_unique<Rectangle>(2.0f, 2.0f)
+    );
+    world.addBody(
+        Vec2(0.0f, -6.5f),
+        0.0f,
+        std::make_unique<Rectangle>(25.0f, 1.0f)
+    );
 
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
+    Uint64 previousTime = SDL_GetPerformanceCounter();
 
     bool running = true;
     SDL_Event event;
+    
+    while (running) {
 
-    while(running){
-        while(SDL_PollEvent(&event)){
-            if(event.type == SDL_QUIT){
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
                 running = false;
             }
-            if(event.type == SDL_KEYDOWN){
-                const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
-                if(event.key.keysym.sym==SDLK_ESCAPE){
-                    running = false;
-                }
 
-            }
-            if(event.type==SDL_MOUSEBUTTONDOWN){
-                int mouseX = event.button.x;
-                int mouseY = event.button.y;
-
-                std::cout << "Clicked at: "<< mouseX << ", " << mouseY << '\n';
-
-                if(event.button.button == SDL_BUTTON_LEFT){
-                    circles.push_back({mouseX, mouseY, 30});
-                }
-                if(event.button.button == SDL_BUTTON_RIGHT){
-                    rectangles.push_back({mouseX-20, mouseY-30, 40, 60});
-                };
-
-                SDL_SetRenderDrawColor(renderer, 20, 20, 30, 255);
-                SDL_RenderClear(renderer);
-
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                for(const CircleData& circle : circles){
-                    drawFilledCircle(renderer, circle.x, circle.y, circle.radius);
-                }
-                SDL_SetRenderDrawColor(renderer, 255, 123, 145, 255);
-                for(const RectangleData& rectangle : rectangles){
-                    SDL_Rect rect = {rectangle.x-15, rectangle.y-20, rectangle.width, rectangle.height};
-                    SDL_RenderFillRect(renderer, &rect);
-                }
-                SDL_RenderPresent(renderer);
+            if (event.type == SDL_KEYDOWN &&
+                event.key.keysym.sym == SDLK_ESCAPE) {
+                running = false;
             }
         }
+
+        Uint64 currentTime = SDL_GetPerformanceCounter();
+
+        float deltaTime = static_cast<float>(
+            currentTime - previousTime
+        ) / SDL_GetPerformanceFrequency();
+
+        deltaTime = std::min(deltaTime, 0.05f);
+
+        previousTime = currentTime;
+
+        world.advance(deltaTime);
+
+        // 4. Render
+        renderer.setDrawColor(20, 20, 30, 255);
+        renderer.clear();
+
+        renderer.setDrawColor(255, 255, 255, 255);
+        float alpha = world.getInterpolationAlpha();
+        for (std::size_t i = 0; i < world.getBodyCount(); ++i) {
+            renderer.drawBody(world.getBody(i), alpha);
+        }
+
+        renderer.present();
     }
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
     return 0;
+
 }

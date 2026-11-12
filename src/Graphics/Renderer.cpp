@@ -1,23 +1,10 @@
 #include"../../include/Graphics/Renderer.h"
-#include"../../include/Graphics/Renderer.h"
 #include"../../include/Physics/circle.h"
 #include"../../include/Physics/rectangle.h"
 #include"../../include/Physics/shape.h"
 
-#include <iostream>
 #include <stdexcept>
 
-struct CircleData{
-    int x;
-    int y;
-    int radius;
-};
-struct RectangleData{
-    int x;
-    int y;
-    int width;
-    int height;
-};
 
 void drawFilledCircle( SDL_Renderer* renderer, int centerX, int centerY, int radius){
     for(int y =-radius;y<=radius;y++){
@@ -25,8 +12,7 @@ void drawFilledCircle( SDL_Renderer* renderer, int centerX, int centerY, int rad
         SDL_RenderDrawLine(renderer, centerX-x, centerY+y, centerX+x, centerY+y);
     };
 }
-
-Renderer::Renderer(int width, int height) :window(nullptr), renderer(nullptr){
+Renderer::Renderer(int width, int height) :window(nullptr), renderer(nullptr), width(width), height(height){
     if(SDL_Init(SDL_INIT_VIDEO)<0){
         throw std::runtime_error(SDL_GetError());
     }
@@ -75,14 +61,57 @@ void Renderer:: present(){
     SDL_RenderPresent(renderer);
 }
 
-void Renderer::drawBody(const Body& b){
+void Renderer::setScale(float scale){
+    if (scale <= 0.0f) {
+        throw std::invalid_argument("Scale must be positive");
+    }
+    pixelsPerUnit=scale;
+}
+SDL_Point Renderer::worldToScreen(const Vec2 & position)const{
+    SDL_Point point;
+    point.x = static_cast<int>(width / 2.0f + position.x * pixelsPerUnit);
+    point.y = static_cast<int>(height / 2.0f - position.y * pixelsPerUnit);
+    return point;
+}
+
+void Renderer::drawBody(const Body& b, float alpha){
+    if (!b.shape) return;
+    Vec2 renderPosition = b.getInterpolatedPosition(alpha);
     ShapeType s = b.shape->getType();
     if(s == ShapeType::Circle){
+
         const Circle* circle = dynamic_cast<const Circle*>(b.shape.get());
         if(circle == nullptr) return;
+        
+        SDL_Point center = worldToScreen(renderPosition);
+        float radius = circle->radius;
+
+        int screenRadius = static_cast<int>(radius*pixelsPerUnit);
+
+        drawFilledCircle(renderer, center.x, center.y, screenRadius);  
     }
-    if(s ==ShapeType::Rectangle){
+    else if(s ==ShapeType::Rectangle){
         const Rectangle* rectangle = dynamic_cast<const Rectangle*>(b.shape.get());
         if(rectangle == nullptr) return;
+
+        float rectWidth = rectangle->width;
+        float rectHeight = rectangle->height;
+
+        float left = renderPosition.x - rectWidth / 2.0f;
+        float top  = renderPosition.y + rectHeight / 2.0f;
+
+        Vec2 topLeft(left, top);
+        SDL_Point screenTopLeft = worldToScreen(topLeft);
+
+        int screenWidth = static_cast<int>(rectWidth * pixelsPerUnit);
+        int screenHeight = static_cast<int>(rectHeight * pixelsPerUnit);
+
+
+        SDL_Rect r = {screenTopLeft.x, screenTopLeft.y, screenWidth, screenHeight};
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderFillRect(renderer, &r);
     }
+
+
 }
+

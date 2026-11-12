@@ -2,7 +2,7 @@
 #ifndef COLLISION_H
 #define COLLISION_H
 
-#include "../body.h"
+#include "../Physics/body.h"
 #include "collisionManifold.h"
 #include "circleVsCircle.h"
 #include "rectangleVsRectangle.h"

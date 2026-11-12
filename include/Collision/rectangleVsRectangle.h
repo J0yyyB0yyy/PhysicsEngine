@@ -3,8 +3,8 @@
 #define RECTANGLE_VS_RECTANGLE_H
 
 #include <algorithm>
-#include "../body.h"
-#include "../rectangle.h"
+#include "../Physics/body.h"
+#include "../Physics/rectangle.h"
 #include "collisionManifold.h"
 
 inline collisionManifold rectangleVsRectangle(

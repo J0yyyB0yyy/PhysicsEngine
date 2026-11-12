@@ -5,9 +5,9 @@
 #include <algorithm>
 #include <cmath>
 
-#include "../body.h"
-#include "../circle.h"
-#include "../rectangle.h"
+#include "../Physics/body.h"
+#include "../Physics/circle.h"
+#include "../Physics/rectangle.h"
 #include "collisionManifold.h"
 
 inline collisionManifold circleVsRectangle(

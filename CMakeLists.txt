@@ -10,6 +10,7 @@ find_package(SDL2 REQUIRED)
 
 add_executable(PhysicsEngine
     src/main.cpp
+    src/Graphics/Renderer.cpp
 )
 
 target_include_directories(PhysicsEngine PRIVATE
@@ -19,4 +20,3 @@ target_include_directories(PhysicsEngine PRIVATE
 target_link_libraries(PhysicsEngine PRIVATE
     SDL2::SDL2
 )
-

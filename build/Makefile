@@ -129,6 +129,30 @@ PhysicsEngine/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/PhysicsEngine.dir/build.make CMakeFiles/PhysicsEngine.dir/build
 .PHONY : PhysicsEngine/fast
 
+src/Graphics/Renderer.o: src/Graphics/Renderer.cpp.o
+.PHONY : src/Graphics/Renderer.o
+
+# target to build an object file
+src/Graphics/Renderer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PhysicsEngine.dir/build.make CMakeFiles/PhysicsEngine.dir/src/Graphics/Renderer.cpp.o
+.PHONY : src/Graphics/Renderer.cpp.o
+
+src/Graphics/Renderer.i: src/Graphics/Renderer.cpp.i
+.PHONY : src/Graphics/Renderer.i
+
+# target to preprocess a source file
+src/Graphics/Renderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PhysicsEngine.dir/build.make CMakeFiles/PhysicsEngine.dir/src/Graphics/Renderer.cpp.i
+.PHONY : src/Graphics/Renderer.cpp.i
+
+src/Graphics/Renderer.s: src/Graphics/Renderer.cpp.s
+.PHONY : src/Graphics/Renderer.s
+
+# target to generate assembly for a file
+src/Graphics/Renderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PhysicsEngine.dir/build.make CMakeFiles/PhysicsEngine.dir/src/Graphics/Renderer.cpp.s
+.PHONY : src/Graphics/Renderer.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -162,6 +186,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... PhysicsEngine"
+	@echo "... src/Graphics/Renderer.o"
+	@echo "... src/Graphics/Renderer.i"
+	@echo "... src/Graphics/Renderer.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

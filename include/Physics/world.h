@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "body.h"
-#include "Collision/collision.h"
-#include "Collision/collisionResponse.h"
+#include "../Collision/collision.h"
+#include "../Collision/collisionResponse.h"
 
 class World {
 private:

@@ -2,7 +2,7 @@
 #define COLLISION_RESPONSE_H
 
 #include "collisionManifold.h"
-#include "../body.h"
+#include "../Physics/body.h"
 #include <algorithm>
 #include <cmath>
 
