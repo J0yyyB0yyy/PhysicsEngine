@@ -74,6 +74,10 @@ SDL_Point Renderer::worldToScreen(const Vec2 & position)const{
     return point;
 }
 
+Vec2 Renderer::screenToWorld(int sx, int sy) const {
+    return Vec2((sx - width / 2.0f) / pixelsPerUnit, (height / 2.0f - sy) / pixelsPerUnit);
+}
+
 void Renderer::drawBody(const Body& b, float alpha){
     if (!b.shape) return;
     Vec2 renderPosition = b.getInterpolatedPosition(alpha);

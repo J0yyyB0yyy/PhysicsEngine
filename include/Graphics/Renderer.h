@@ -18,6 +18,7 @@ public:
     void setScale(float scale);
 
     SDL_Point worldToScreen(const Vec2& position) const;
+    Vec2 screenToWorld(int sx, int sy) const;
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
