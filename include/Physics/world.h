@@ -12,6 +12,7 @@
 #include "../Collision/collision.h"
 #include "../Collision/collisionResponse.h"
 #include "../Collision/sweep.h"
+#include "../Collision/aabb.h"
 
 class World {
 private:
@@ -104,8 +105,14 @@ public:
                 Body& a = bodies[i];
                 Body& b = bodies[j];
 
-                if (a.inverseMass + b.inverseMass == 0.0f) continue; // static vs static
+                if (a.inverseMass + b.inverseMass == 0.0f) continue;
 
+                AABB boxA = getAABB(a);
+                AABB boxB = getAABB(b);
+
+                if(!overlaps(boxA, boxB)){
+                    continue;
+                }
                 collisionManifold m = checkCollision(a, b);
                 if (m.colliding) contacts.push_back({i, j, m});
             }

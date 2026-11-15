@@ -16,10 +16,10 @@ int main() {
 
     renderer.setScale(50.0f);
 
-    for(int i=0; i<100;i++){
+    for(int i=0; i<300;i++){
         world.addBody(Vec2(-5.0f, 2.0f),0.01f,std::make_unique<Circle>(0.15f));
         world.getBody(world.getBodyCount() - 1).restitution = 0.8f;
-        world.getBody(world.getBodyCount() - 1).velocity = Vec2(300.0f,0.0f);
+        world.getBody(world.getBodyCount() - 1).velocity = Vec2(3000.0f,0.0f);
         world.getBody(world.getBodyCount() - 1).friction = 0.0f;
 
     }
@@ -63,7 +63,7 @@ int main() {
                 Uint32 buttons = SDL_GetMouseState(&mx, &my);
                 if (buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                     Vec2 p = renderer.screenToWorld(mx, my);
-                    world.addBody(p, 1.0f, std::make_unique<Circle>(0.15f));
+                    world.addBody(p, 100.0f, std::make_unique<Circle>(0.15f));
                     world.getBody(world.getBodyCount() - 1).restitution = 1.0f;
                 }
             }
